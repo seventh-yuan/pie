@@ -32,7 +32,7 @@ pie_inline void i2c_enable_input(const struct i2c_bit_operations* ops)
 
 pie_inline i2c_bit_t *i2c_to_i2c_bit(i2c_t *i2c)
 {
-    return CONTAINER_OF(i2c, i2c_bit_t, i2c);
+    return i2c->private_data;
 }
 
 int i2c_bit_start(i2c_t *i2c)
@@ -137,7 +137,7 @@ int i2c_bit_readb(i2c_t *i2c, uint8_t *data, i2c_ack_t ack)
     return 0;
 }
 
-const struct i2c_operations i2c_ops={
+static const i2c_ops_t i2c_ops={
     .start = i2c_bit_start,
     .stop = i2c_bit_stop,
     .writeb = i2c_bit_writeb,
@@ -145,13 +145,12 @@ const struct i2c_operations i2c_ops={
 };
 
 
-int i2c_bit_register(const char* dev_name, i2c_bit_t* i2c_bit)
+void i2c_bit_init(i2c_t* i2c, i2c_bit_t* i2c_bit)
 {
-    ASSERT(dev_name);
+    ASSERT(i2c);
     ASSERT(i2c_bit);
     ASSERT(i2c_bit->ops);
 
-    i2c_bit->i2c.ops = &i2c_ops;
-
-    return i2c_register(dev_name, &i2c_bit->i2c);
+    i2c->private_data = i2c_bit;
+    i2c_init(i2c, &i2c_ops);
 }

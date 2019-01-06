@@ -59,9 +59,15 @@
 #define SD_HIGH_SPEED   500000
 
 
-int sd_init(struct sdcard* sd)
+int sd_init(struct sdcard* sd, spi_t* spi, pin_t* pin, int cs_pin)
 {
     ASSERT(sd);
+    ASSERT(spi);
+    ASSERT(pin);
+
+    sd->spi = spi;
+    sd->pin = pin;
+    sd->cs_pin = cs_pin;
 
     int ret = spi_set_mode(sd->spi, SPI_MODE_2);
 
@@ -269,7 +275,7 @@ int sd_initialize(struct sdcard* sd)
   int r1 = 0;
   uint16_t retry;
   uint8_t rd_data[4];
-  sset_speed(sd->spi, SD_LOW_SPEED);
+  spi_set_speed(sd->spi, SD_LOW_SPEED);
 
   uint8_t dummy = 0xFF;
 
@@ -333,7 +339,7 @@ int sd_initialize(struct sdcard* sd)
   }
 
   sd_deselect(sd);
-  sset_speed(sd->spi, SD_HIGH_SPEED);
+  spi_set_speed(sd->spi, SD_HIGH_SPEED);
   if(sd->type)
     return 0;
   else if(r1)

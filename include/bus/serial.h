@@ -6,6 +6,10 @@
 extern "C"{
 #endif
 
+#define MODULE_SERIAL(n)      MODULE_DEFINE(serial, n)
+#define IMPORT_SERIAL(n)      IMPORT_MODULE(serial, n)
+#define SERIAL(n)             MODULE(serial, n)
+
 
 #define SERIAL_FLAG_IRQ_TX           0x01
 #define SERIAL_FLAG_IRQ_RX           0x02
@@ -71,18 +75,14 @@ typedef struct serial {
     const struct serial_operations* ops;
 } serial_t;
 
-struct serial_operations{
+typedef struct serial_operations{
     int (*init)(serial_t* serial);
     int (*putc)(serial_t* serial, int ch);
     int (*getc)(serial_t* serial);
     int (*config)(serial_t* serial, int cmd, void* arg);
-};
+} serial_ops_t;
 
-int serial_register(const char* dev_name, serial_t* serial);
-
-serial_t* serial_open(const char* dev_name);
-
-void serial_close(serial_t* serial);
+void serial_init(serial_t* serial, const serial_ops_t* ops);
 
 int serial_write(serial_t* serial, const uint8_t* wr_data, size_t wr_len);
 

@@ -16,6 +16,10 @@ extern "C"{
 #define I2C_BYTE_ADDRESS    0
 #define I2C_WORD_ADDRESS    1
 
+#define MODULE_I2C(n)      MODULE_DEFINE(i2c, n)
+#define IMPORT_I2C(n)      IMPORT_MODULE(i2c, n)
+#define I2C(n)             MODULE(i2c, n)
+
 typedef enum {
     I2C_ACK = 0,
     I2C_NACK,
@@ -26,24 +30,19 @@ typedef struct i2c {
     list_t node;
     const char* dev_name;
     const struct i2c_operations *ops;
+    void* private_data;
 } i2c_t;
 
-struct i2c_operations {
-    int (*init)(i2c_t* i2c);
+typedef struct i2c_operations {
     int (*start)(i2c_t* i2c);
     int (*stop)(i2c_t* i2c);
     int (*writeb)(i2c_t* i2c, uint8_t data, i2c_ack_t* ack);
     int (*readb)(i2c_t* i2c, uint8_t* data, i2c_ack_t ack);
-};
-
-int i2c_init(int index, i2c_t* i2c);
+} i2c_ops_t;
 
 
-int i2c_register(const char* dev_name, i2c_t* i2c);
+void i2c_init(i2c_t* i2c, const i2c_ops_t* ops);
 
-i2c_t* i2c_open(const char* dev_name);
-
-void i2c_close(i2c_t* i2c);
 /**
   * @brief This function is used to write data to i2c bus.
   * @param i2c: i2c bus pointer.

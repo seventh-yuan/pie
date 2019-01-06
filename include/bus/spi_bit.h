@@ -12,25 +12,23 @@
 extern "C"{
 #endif
 
-#include <common/piedef.h>
+#include <common/pie.h>
 #include <bus/spi.h>
 
 typedef struct spi_bit {
-    int8_t inited;
-    spi_t spi;
     spi_mode_t mode;
     int delay_us;
     const struct spi_bit_operations *ops;
 } spi_bit_t;
 
-struct spi_bit_operations {
+typedef struct spi_bit_operations {
     int (*mosi_set)(int state);
     int (*miso_get)(void);
     int (*sck_set)(int state);
     void (*udelay)(int us);
-};
+} spi_bit_ops_t;
 
-int spi_bit_register(const char* dev_name, spi_bit_t* spi);
+void spi_bit_init(spi_t* spi, spi_bit_t* spi_bit);
 
 #ifdef __cplusplus
 }

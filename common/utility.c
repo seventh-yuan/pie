@@ -55,7 +55,7 @@ int pie_print(const char* fmt, ...)
     ret = vsnprintf((char*)stdio_buffer, sizeof(stdio_buffer) - 1, fmt, args);
     va_end(args);
 
-    return device_write(stdio, (const char*)stdio_buffer, ret);
+    return device_write(stdio, (const uint8_t*)stdio_buffer, ret);
 }
 
 

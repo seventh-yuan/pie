@@ -32,45 +32,12 @@ static int i2c_readb(i2c_t* i2c, uint8_t* data, i2c_ack_t ack)
 }
 
 
-int i2c_register(const char* dev_name, i2c_t* i2c)
+void i2c_init(i2c_t* i2c, const i2c_ops_t* ops)
 {
-    ASSERT(dev_name);
     ASSERT(i2c);
     ASSERT(i2c->ops);
 
-    i2c->dev_name = dev_name;
-
-    list_add(&i2c_list_head, &i2c->node);
-
-    return 0;
-}
-
-i2c_t* i2c_open(const char* dev_name)
-{
-    ASSERT(dev_name);
-
-    i2c_t* i2c = NULL;
-    list_t* node;
-    list_for_each(node, &i2c_list_head)
-    {
-        i2c = list_entry(node, i2c_t, node);
-        if (0 == strcmp(i2c->dev_name, dev_name))
-            break;
-    }
-
-    if (i2c && (!i2c->inited))
-    {
-        if (i2c->ops->init && !i2c->ops->init(i2c))
-            return NULL;
-        i2c->inited = TRUE;
-    }
-    return i2c;
-}
-
-void i2c_close(i2c_t* i2c)
-{
-    if (i2c && i2c->inited)
-        i2c->inited = FALSE;
+    i2c->ops = ops;
 }
 
 /**

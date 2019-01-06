@@ -65,7 +65,7 @@ static int at24cxx_write(at24cxx_t* at24cxx, uint32_t address, const uint8_t* wr
         else
             wr_len = length;
 
-        if(i2c_address_write(at24cxx->bus, dev_addr, address, addr_flag, wr_data, wr_len) < 0)
+        if(i2c_address_write(at24cxx->i2c, dev_addr, address, addr_flag, wr_data, wr_len) < 0)
             break;
         length -= wr_len;
         wr_data += wr_len;
@@ -104,7 +104,7 @@ static int at24cxx_read(at24cxx_t* at24cxx, uint32_t address, uint8_t* rd_data, 
             rd_len = chip_info->page_size - (address & (chip_info->page_size - 1));
         else
             rd_len = length;
-        if(i2c_address_read(at24cxx->bus, dev_addr, address, addr_flag, rd_data, rd_len) < 0)
+        if(i2c_address_read(at24cxx->i2c, dev_addr, address, addr_flag, rd_data, rd_len) < 0)
             break;
         length -= rd_len;
         rd_data += rd_len;
@@ -120,7 +120,7 @@ static int at24cxx_eeprom_write(eeprom_t* eeprom, uint32_t address, const uint8_
     ASSERT(eeprom);
     ASSERT(wr_data);
 
-    at24cxx_t* at24cxx = CONTAINER_OF(eeprom, at24cxx_t, eeprom);
+    at24cxx_t* at24cxx = eeprom->private_data;
 
     return at24cxx_write(at24cxx, address, wr_data, wr_len);
 }
@@ -130,16 +130,26 @@ static int at24cxx_eeprom_read(eeprom_t* eeprom, uint32_t address, uint8_t* rd_d
     ASSERT(eeprom);
     ASSERT(rd_data);
 
-    at24cxx_t* at24cxx = CONTAINER_OF(eeprom, at24cxx_t, eeprom);
+    at24cxx_t* at24cxx = eeprom->private_data;
 
     return at24cxx_read(at24cxx, address, rd_data, rd_len);
 }
 
+const eeprom_ops_t at24cxx_ops = {
+    .write = at24cxx_eeprom_write,
+    .read = at24cxx_eeprom_read,
+};
 
-void at24cxx_init(at24cxx_t* at24cxx)
+
+void at24cxx_init(eeprom_t* eeprom, at24cxx_t* at24cxx, i2c_t* i2c, uint16_t dev_addr, at24cxx_chip_t chip_type)
 {
+    ASSERT(eeprom);
     ASSERT(at24cxx);
+    ASSERT(i2c);
 
-    at24cxx->eeprom.write = at24cxx_eeprom_write;
-    at24cxx->eeprom.read = at24cxx_eeprom_read;
+    at24cxx->i2c = i2c;
+    at24cxx->dev_addr = dev_addr;
+    at24cxx->chip_type = chip_type;
+    eeprom->private_data = at24cxx;
+    eeprom->ops = &at24cxx_ops;
 }

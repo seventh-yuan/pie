@@ -12,7 +12,7 @@
 extern "C"{
 #endif
 
-#include <common/piedef.h>
+#include <common/pie.h>
 #include <bus/i2c.h>
 
 
@@ -22,16 +22,16 @@ typedef struct i2c_bit {
 	const struct i2c_bit_operations *ops;
 } i2c_bit_t;
 
-struct i2c_bit_operations {
+typedef struct i2c_bit_operations {
 	int (*scl_set)(int state);
 	int (*sda_set)(int state);
 	int (*sda_get)(void);
     void (*enable_output)(void);
     void (*enable_input)(void);
 	void (*udelay)(int us);
-};
+} i2c_bit_ops_t;
 
-int i2c_bit_register(const char* dev_name, i2c_bit_t* i2c_bit);
+void i2c_bit_init(i2c_t* i2c, i2c_bit_t* i2c_bit);
 
 #ifdef __cplusplus
 }

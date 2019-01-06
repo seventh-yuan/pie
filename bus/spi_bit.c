@@ -27,7 +27,7 @@ pie_inline void spi_udelay(const struct spi_bit_operations *ops, int us)
 
 pie_inline spi_bit_t *spi_to_spi_bit(spi_t *spi)
 {
-    return CONTAINER_OF(spi, spi_bit_t, spi);
+    return spi->private_data;
 }
 
 pie_inline int spi_read_writeb(spi_bit_t* spi_bit, uint8_t wr_data, spi_mode_t mode)
@@ -198,13 +198,11 @@ const struct spi_operations spi_ops={
     .transfer = spi_bit_transfer,
 };
 
-int spi_bit_register(const char* dev_name, spi_bit_t* spi_bit)
+void spi_bit_init(spi_t* spi, spi_bit_t* spi_bit)
 {
-    ASSERT(dev_name);
+    ASSERT(spi);
     ASSERT(spi_bit);
     ASSERT(spi_bit->ops);
-
-    spi_bit->spi.ops = &spi_ops;
-
-    return spi_register(dev_name, &spi_bit->spi);
+    
+    spi->private_data = spi_bit;
 }

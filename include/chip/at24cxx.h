@@ -18,14 +18,12 @@ typedef enum {
 } at24cxx_chip_t;
 
 typedef struct at24cxx {
-    eeprom_t eeprom;
-    const uint16_t dev_addr;
-    const at24cxx_chip_t chip_type;
-    i2c_t* bus;
+    uint16_t dev_addr;
+    at24cxx_chip_t chip_type;
+    i2c_t* i2c;
 } at24cxx_t;
 
 
-
-void at24cxx_attach_eeprom(at24cxx_t* at24cxx);
+void at24cxx_init(eeprom_t* eeprom, at24cxx_t* at24cxx, i2c_t* i2c, uint16_t dev_addr, at24cxx_chip_t chip_type);
 
 #endif

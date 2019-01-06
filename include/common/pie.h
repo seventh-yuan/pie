@@ -13,9 +13,9 @@
 #include <common/device.h>
 
 
-void pie_kernel_start(void);
+void kernel_start(void);
 
-void pie_kernel_periodic(void);
+void kernel_periodic(void);
 
 
 #endif

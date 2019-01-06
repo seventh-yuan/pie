@@ -5,11 +5,18 @@
 #include <bus/pin.h>
 
 
+#define MODULE_W25QXX(n)      MODULE_DEFINE(w25qxx, n)
+#define IMPORT_W25QXX(n)      IMPORT_MODULE(w25qxx, n)
+#define W25QXX(n)             MODULE(w25qxx, n)
+
+
 typedef struct w25qxx {
     int cs_pin;
     pin_t* pin;
     spi_t* spi;
 } w25qxx_t;
+
+void w25qxx_init(w25qxx_t* w25qxx, spi_t* spi, pin_t* pin, int cs_pin);
 
 int w25qxx_sector_erase(w25qxx_t* w25qxx, uint32_t address);
 

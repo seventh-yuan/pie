@@ -1,4 +1,5 @@
 #include <common/pie.h>
+#include <string.h>
 
 void *mem_alloc(size_t size)
 {

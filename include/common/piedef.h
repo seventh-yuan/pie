@@ -78,6 +78,10 @@ typedef uint32_t                      millis_t;
 #define PIE_BIT_TEST(x,b)           (((x)&(PIE_BIT(b)))?1:0)
 #define PIE_BITS_TEST(x,bits)       (((x)&(bits))?1:0)
 
+#define MODULE_DEFINE(name, n)      name##_t name##_module##n
+#define IMPORT_MODULE(name, n)      extern name##_t name##_module##n
+#define MODULE(name, n)             (&(name##_module##n))
+
 typedef struct list_head {
     struct list_head *next;
     struct list_head *prev;
@@ -94,13 +98,14 @@ typedef struct{
 } co_thread_t;
 
 typedef struct device {
+    void* private_data;
     const struct device_operations* ops;
 } device_t;
 
-struct device_operations {
-    int (*write)(struct device* device, const char* wr_data, size_t wr_len);
-    int (*read)(struct device* device, char* rd_data, size_t rd_len);
-};
+typedef struct device_operations {
+    int (*write)(struct device* device, const uint8_t* wr_data, size_t wr_len);
+    int (*read)(struct device* device, uint8_t* rd_data, size_t rd_len);
+} device_ops_t;
 
 #ifdef __cplusplus
 }

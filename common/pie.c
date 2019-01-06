@@ -29,7 +29,7 @@ static void co_thread_dispatch(void)
 }
 #endif
 
-void pie_kernel_start(void)
+void kernel_start(void)
 {
 #if CONFIG_PIE_USING_RTOS==1
     osKernelStart();
@@ -41,7 +41,7 @@ void pie_kernel_start(void)
 #endif
 }
 
-void pie_kernel_periodic(void)
+void kernel_periodic(void)
 {
 #if CONFIG_PIE_USING_RTOS==1
     osSystickHandler();

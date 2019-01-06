@@ -2,47 +2,12 @@
 #include <common/pie.h>
 #include <bus/pin.h>
 
-LIST_HEAD(pin_list_head);
-
-int pin_register(const char* dev_name, pin_t* pin)
+void pin_init(pin_t* pin, const pin_ops_t* ops)
 {
-    ASSERT(dev_name);
     ASSERT(pin);
     ASSERT(pin->ops);
 
-    pin->dev_name = dev_name;
-
-    list_add(&pin_list_head, &pin->node);
-
-    return 0;
-}
-
-pin_t* pin_open(const char* dev_name)
-{
-    ASSERT(dev_name);
-
-    pin_t* pin = NULL;
-    list_t* node;
-    list_for_each(node, &pin_list_head)
-    {
-        pin = list_entry(node, pin_t, node);
-        if (0 == strcmp(pin->dev_name, dev_name))
-            break;
-    }
-
-    if (pin && (!pin->inited))
-    {
-        if (pin->ops->init && !pin->ops->init(pin))
-            return NULL;
-        pin->inited = TRUE;
-    }
-    return pin;
-}
-
-void pin_close(pin_t* pin)
-{
-    if (pin && pin->inited)
-        pin->inited = FALSE;
+    pin->ops = ops;
 }
 
 int pin_set_direction(pin_t* pin, int index, pin_dir_t dir)

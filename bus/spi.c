@@ -2,46 +2,13 @@
 #include <bus/spi.h>
 #include <common/pie.h>
 
-LIST_HEAD(spi_list_head);
 
-int spi_register(const char* dev_name, spi_t* spi)
+void spi_init(spi_t* spi, const spi_ops_t* ops)
 {
-    ASSERT(dev_name);
     ASSERT(spi);
     ASSERT(spi->ops);
 
-    spi->dev_name = dev_name;
-    list_add(&spi_list_head, &spi->node);
-
-    return 0;
-}
-
-spi_t* spi_open(const char* dev_name)
-{
-    ASSERT(dev_name);
-
-    spi_t* spi = NULL;
-    list_t* node;
-    list_for_each(node, &spi_list_head)
-    {
-        spi = list_entry(node, spi_t, node);
-        if (0 == strcmp(spi->dev_name, dev_name))
-            break;
-    }
-
-    if (spi && (!spi->inited))
-    {
-        if (spi->ops->init && !spi->ops->init(spi))
-            return NULL;
-        spi->inited = TRUE;
-    }
-    return spi;
-}
-
-void spi_close(spi_t* spi)
-{
-    if (spi && spi->inited)
-        spi->inited = FALSE;
+    spi->ops = ops;
 }
 
 int spi_set_mode(spi_t *spi, spi_mode_t mode)

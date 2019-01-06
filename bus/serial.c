@@ -127,46 +127,12 @@ int serial_read(struct serial* serial, uint8_t* rd_data, size_t rd_len)
         return _serial_poll_read(serial, rd_data, rd_len);
 }
 
-
-int serial_register(const char* dev_name, serial_t* serial)
+void serial_init(serial_t* serial, const serial_ops_t* ops)
 {
-    ASSERT(dev_name);
     ASSERT(serial);
-    ASSERT(serial->ops);
+    ASSERT(ops);
 
-    serial->dev_name = dev_name;
-    list_add(&serial_list_head, &serial->node);
-
-    return 0;
-
-}
-
-serial_t* serial_open(const char* dev_name)
-{
-    ASSERT(dev_name);
-
-    serial_t* serial = NULL;
-    list_t* node;
-    list_for_each(node, &serial_list_head)
-    {
-        serial = list_entry(node, serial_t, node);
-        if (0 == strcmp(serial->dev_name, dev_name))
-            break;
-    }
-
-    if(!(serial->flags & SERIAL_FLAG_INIT) && serial->ops->init)
-    {
-        if (serial->ops->init(serial) != 0)
-            return NULL;
-    }
-    serial->flags |= SERIAL_FLAG_INIT;
-    return serial;
-}
-
-void serial_close(serial_t* serial)
-{
-    if (serial && (serial->flags & SERIAL_FLAG_INIT))
-        serial->flags &= (~SERIAL_FLAG_INIT);
+    serial->ops = ops;
 }
 
 void serial_hw_isr(struct serial* serial, uint8_t event)

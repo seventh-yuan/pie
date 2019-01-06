@@ -13,6 +13,10 @@
 extern "C"{
 #endif
 
+#define MODULE_SPI(n)      MODULE_DEFINE(spi, n)
+#define IMPORT_SPI(n)      IMPORT_MODULE(spi, n)
+#define SPI(n)             MODULE(spi, n)
+
 typedef enum {
     SPI_MODE_0,
     SPI_MODE_1,
@@ -21,23 +25,21 @@ typedef enum {
 } spi_mode_t;
 
 typedef struct spi {
-    int8_t inited;
-    const char* dev_name;
-    list_t node;
+    void* private_data;
     const struct spi_operations *ops;
 } spi_t;
 
-struct spi_operations{
+typedef struct spi_operations{
     int (*init)(spi_t* spi);
     int (*set_speed)(spi_t* spi, uint32_t speed);
     int (*set_mode)(spi_t* spi, spi_mode_t mode);
     int (*write)(spi_t* spi, const uint8_t* wr_data, size_t wr_len);
     int (*read)(spi_t* spi, uint8_t* rd_data, size_t rd_len);
     int (*transfer)(spi_t* spi, const uint8_t *wr_data, uint8_t *rd_data, size_t len);
-};
+} spi_ops_t;
 
 
-int spi_register(const char* dev_name, spi_t* spi);
+void spi_init(spi_t* spi, const spi_ops_t* ops);
 
 spi_t* spi_open(const char* dev_name);
 

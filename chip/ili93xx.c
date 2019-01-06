@@ -13,7 +13,7 @@
 
 #define DFT_SCAN_DIR  L2R_U2D  //默认的扫描方向
 
-void ili93xx_write_reg(struct ili93xx* ili93xx, uint16_t value)
+void ili93xx_write_reg(ili93xx_t* ili93xx, uint16_t value)
 {
   ASSERT(ili93xx);
   ASSERT(ili93xx->ops);
@@ -22,7 +22,7 @@ void ili93xx_write_reg(struct ili93xx* ili93xx, uint16_t value)
     ili93xx->ops->write_reg(value);
 }
 
-void ili93xx_write_data(struct ili93xx* ili93xx, uint16_t value)
+void ili93xx_write_data(ili93xx_t* ili93xx, uint16_t value)
 {
   ASSERT(ili93xx);
   ASSERT(ili93xx->ops);
@@ -31,7 +31,7 @@ void ili93xx_write_data(struct ili93xx* ili93xx, uint16_t value)
     ili93xx->ops->write_data(value);
 }
 
-uint16_t ili93xx_read_data(struct ili93xx* ili93xx)
+uint16_t ili93xx_read_data(ili93xx_t* ili93xx)
 {
   ASSERT(ili93xx);
   ASSERT(ili93xx->ops);
@@ -41,19 +41,19 @@ uint16_t ili93xx_read_data(struct ili93xx* ili93xx)
   return 0;
 }
 
-void ili93xx_write_register(struct ili93xx* ili93xx, uint16_t reg, uint16_t value)
+void ili93xx_write_register(ili93xx_t* ili93xx, uint16_t reg, uint16_t value)
 {
   ili93xx_write_reg(ili93xx, reg);
   ili93xx_write_data(ili93xx, value);
 }
 
-uint16_t ili93xx_read_register(struct ili93xx* ili93xx, uint16_t reg)
+uint16_t ili93xx_read_register(ili93xx_t* ili93xx, uint16_t reg)
 {
   ili93xx_write_reg(ili93xx, reg);
   return ili93xx_read_data(ili93xx);
 }
 
-void ili93xx_backlight_control(struct ili93xx* ili93xx, int state)
+void ili93xx_backlight_control(ili93xx_t* ili93xx, int state)
 {
   ASSERT(ili93xx);
   ASSERT(ili93xx->ops);
@@ -62,12 +62,12 @@ void ili93xx_backlight_control(struct ili93xx* ili93xx, int state)
     ili93xx->ops->backlight_control(state);
 }
 
-void ili93xx_writeram_prepare(struct ili93xx* ili93xx)
+void ili93xx_writeram_prepare(ili93xx_t* ili93xx)
 {
   ili93xx_write_reg(ili93xx, ili93xx->wramcmd);
 }
 
-void ili93xx_set_cursor(struct ili93xx* ili93xx, uint16_t x, uint16_t y)
+void ili93xx_set_cursor(ili93xx_t* ili93xx, uint16_t x, uint16_t y)
 {
   ili93xx_write_reg(ili93xx, ili93xx->setxcmd);
   ili93xx_write_data(ili93xx, x >> 8);
@@ -77,7 +77,7 @@ void ili93xx_set_cursor(struct ili93xx* ili93xx, uint16_t x, uint16_t y)
   ili93xx_write_data(ili93xx, y & 0xFF);
 }
 
-void ili93xx_fill(struct ili93xx* ili93xx, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color)
+void ili93xx_fill(ili93xx_t* ili93xx, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color)
 {
   int xlen = x2 - x1 + 1;
   for(int i = y1; i <= y2; i ++)
@@ -89,7 +89,7 @@ void ili93xx_fill(struct ili93xx* ili93xx, uint16_t x1, uint16_t y1, uint16_t x2
   }
 }
 
-void ili93xx_scan_dir(struct ili93xx* ili93xx, int dir)
+void ili93xx_scan_dir(ili93xx_t* ili93xx, int dir)
 {
   uint16_t regval = 0;
   uint16_t dirreg = 0;
@@ -134,7 +134,7 @@ void ili93xx_scan_dir(struct ili93xx* ili93xx, int dir)
   ili93xx_write_data(ili93xx, (ili93xx->height - 1) & 0xFF);
 }
 
-void ili93xx_set_dir(struct ili93xx* ili93xx, uint8_t dir)
+void ili93xx_set_dir(ili93xx_t* ili93xx, uint8_t dir)
 {
   if(dir == 0)
   {
@@ -157,8 +157,12 @@ void ili93xx_set_dir(struct ili93xx* ili93xx, uint8_t dir)
   ili93xx_scan_dir(ili93xx, DFT_SCAN_DIR);
 }
 
-void ili93xx_init(struct ili93xx* ili93xx)
+void ili93xx_init(ili93xx_t* ili93xx, const ili93xx_ops_t* ops)
 {
+  ASSERT(ili93xx);
+  ASSERT(ops);
+
+  ili93xx->ops = ops;
   ili93xx_read_register(ili93xx, 0x0000);
   ili93xx_write_reg(ili93xx, 0xD3);
   ili93xx_read_data(ili93xx);
@@ -258,7 +262,7 @@ void ili93xx_init(struct ili93xx* ili93xx)
   ili93xx_write_data(ili93xx, 0x00);
   ili93xx_write_data(ili93xx, 0xef);   
   ili93xx_write_reg(ili93xx, 0x11); //Exit Sleep
-  pi_sleep_ms(120);
+  sleep_ms(120);
   ili93xx_write_reg(ili93xx, 0x29); //display on  
 
   ili93xx_set_dir(ili93xx, 0);

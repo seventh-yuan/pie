@@ -165,7 +165,7 @@ int w25qxx_sector_erase(w25qxx_t* w25qxx, uint32_t address)
 {
     ASSERT(w25qxx);
     ASSERT(address >= 0);
-    ASSERT(address & (SECTOR_SIZE - 1) == 0);
+    ASSERT((address & (SECTOR_SIZE - 1)) == 0);
 
     int ret;
 
@@ -196,7 +196,7 @@ int w25qxx_block32_erase(w25qxx_t* w25qxx, uint32_t address)
 {
     ASSERT(w25qxx);
     ASSERT(address >= 0);
-    ASSERT(address & (BLOCK32K_SIZE - 1) == 0);
+    ASSERT((address & (BLOCK32K_SIZE - 1)) == 0);
 
     int ret;
 
@@ -227,7 +227,7 @@ int w25qxx_block64_erase(w25qxx_t* w25qxx, uint32_t address)
 {
     ASSERT(w25qxx);
     ASSERT(address >= 0);
-    ASSERT(address & (BLOCK64K_SIZE - 1) == 0);
+    ASSERT((address & (BLOCK64K_SIZE - 1)) == 0);
 
     int ret;
 
@@ -328,4 +328,15 @@ int w25qxx_read_manufacturer_device_id(w25qxx_t* w25qxx)
         return ret;
 
     return manufacturer_device_id;
+}
+
+void w25qxx_init(w25qxx_t* w25qxx, spi_t* spi, pin_t* pin, int cs_pin)
+{
+    ASSERT(w25qxx);
+    ASSERT(spi);
+    ASSERT(pin);
+
+    w25qxx->spi = spi;
+    w25qxx->pin = pin;
+    w25qxx->cs_pin = cs_pin;
 }
