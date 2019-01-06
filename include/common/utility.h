@@ -19,6 +19,10 @@ extern "C"{
 
 void stdio_register(device_t* device);
 
+int stdio_fputc(device_t* device, int ch);
+
+int stdio_fgetc(device_t* device);
+
 int stdio_putc(int ch);
 
 int stdio_getc(void);

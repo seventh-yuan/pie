@@ -24,6 +24,13 @@ extern "C"{
 
 #define SERIAL_RB_BUFSZ               100
 
+#define SERIAL_CONFIG   {115200,SERIAL_DATABITS_8,SERIAL_STOPBITS_1,SERIAL_PARITY_NONE}
+
+#define SERIAL_SET_CONFIG_DEFAULT(serial)                                  do {serial->config.baudrate = 115200;\
+                                                                               serial->config.databits = SERIAL_DATABITS_8;\
+                                                                               serial->config.stopbits = SERIAL_STOPBITS_1;\
+                                                                               serial->config.parity = SERIAL_PARITY_NONE;\
+                                                                           } while(0)
 typedef enum{
     SERIAL_PARITY_NONE,
     SERIAL_PARITY_EVEN,
@@ -43,19 +50,11 @@ typedef enum{
 }serial_stopbits_t;
 
 
-#define SERIAL_CONFIG_DEFAULT       \
-{                                   \
-    115200,                         \
-    SERIAL_DATABITS_8,              \
-    SERIAL_PARITY_NONE,             \
-    SERIAL_STOPBITS_1,              \
-}
-
 typedef struct serial_config {
     int baudrate;
     serial_databits_t databits;
-    serial_parity_t parity;
     serial_stopbits_t stopbits;
+    serial_parity_t parity;
 } serial_config_t;
 
 typedef struct serial_fifo {

@@ -29,6 +29,26 @@ void stdio_register(device_t* device)
     stdio = device;
 }
 
+int stdio_fputc(device_t* device, int ch)
+{
+    ASSERT(device);
+
+    return device_write(device, (const uint8_t*)&ch, 1);
+}
+
+int stdio_fgetc(device_t* device)
+{
+    ASSERT(device);
+
+    int ch = 0;
+    int ret = 0;
+
+    if ((ret = device_read(device, (uint8_t*)&ch, 1)) <= 0)
+        return -1;
+
+    return ch;
+}
+
 int stdio_putc(int ch)
 {
     if (stdio)

@@ -66,6 +66,8 @@ typedef uint32_t                      millis_t;
 #define NULL                         (0)
 #endif
 
+#define KERNEL_NL                   "\r\n"
+
 #define CONTAINER_OF(node, type, member)\
     ((type *)((char *)(node) - (unsigned long)(&((type *)0)->member)))
 

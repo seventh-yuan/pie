@@ -133,6 +133,9 @@ void serial_init(serial_t* serial, const serial_ops_t* ops)
     ASSERT(ops);
 
     serial->ops = ops;
+
+    if (serial->ops->init)
+        serial->ops->init(serial);
 }
 
 void serial_hw_isr(struct serial* serial, uint8_t event)
