@@ -15,4 +15,8 @@
 #define CONFIG_PIE_USING_ASSERT             1
 #endif
 
+#ifndef CONFIG_PIE_USING_STDIO
+#define CONFIG_PIE_USING_STDIO              1
+#endif
+
 #endif

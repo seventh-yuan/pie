@@ -5,9 +5,9 @@
 extern "C"{
 #endif
 
-#define MODULE_DEV(n)      MODULE_DEFINE(dev, n)
-#define IMPORT_DEV(n)      IMPORT_MODULE(devs, n)
-#define DEV(n)             MODULE(dev, n)
+#define MODULE_DEV(n)      MODULE_DEFINE(device, n)
+#define IMPORT_DEV(n)      IMPORT_MODULE(device, n)
+#define DEV(n)             MODULE(device, n)
 
 
 void device_init(device_t* device, const device_ops_t* ops);

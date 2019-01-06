@@ -2,6 +2,7 @@
 #define __UTILITY_H__
 #include <common/piecfg.h>
 #include <common/piedef.h>
+
 #ifdef __cplusplus
 extern "C"{
 #endif
@@ -17,7 +18,9 @@ extern "C"{
 #define ASSERT(expr)     ((void)0) 
 #endif
 
-void stdio_register(device_t* device);
+#define MODULE_STDIO()         MODULE_DEV(0)
+#define IMPORT_STDIO()                  IMPORT_DEV(0)
+#define STDIO()                         DEV(0)
 
 int stdio_fputc(device_t* device, int ch);
 
