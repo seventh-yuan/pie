@@ -18,9 +18,12 @@ extern "C"{
 #define ASSERT(expr)     ((void)0) 
 #endif
 
-#define MODULE_STDIO()         MODULE_DEV(0)
-#define IMPORT_STDIO()                  IMPORT_DEV(0)
-#define STDIO()                         DEV(0)
+#define MODULE_STDIO()              MODULE_DEV(0)
+#define IMPORT_STDIO()              IMPORT_DEV(0)
+#define STDIO()                     DEV(0)
+#define STDIO_SET_PORT(port, ops)   do {STDIO()->private_data = port; STDIO()->ops = ops};
+
+void stdio_set_port(void* port, const device_ops_t* ops);
 
 int stdio_fputc(device_t* device, int ch);
 

@@ -15,7 +15,7 @@
 #endif /* __GNUC__ */
 
 #if CONFIG_PIE_USING_STDIO == 1
-IMPORT_STDIO();
+MODULE_STDIO() = {.ops = NULL};
 #endif
 
 #ifndef CONFIG_PIE_PRINT_BUF_SIZE
@@ -23,6 +23,13 @@ IMPORT_STDIO();
 #endif
 
 static char stdio_buffer[CONFIG_PIE_PRINT_BUF_SIZE];
+
+
+void stdio_set_port(void* port, const device_ops_t* ops)
+{
+    STDIO()->private_data = port;
+    STDIO()->ops = ops;
+}
 
 int stdio_fputc(device_t* device, int ch)
 {
@@ -47,20 +54,20 @@ int stdio_fgetc(device_t* device)
 int stdio_putc(int ch)
 {
 #if CONFIG_PIE_USING_STDIO == 1
-    return device_write(STDIO(), (const uint8_t*)&ch, 1);
-#else
-    return 0;
+    if (STDIO()->ops)
+        return device_write(STDIO(), (const uint8_t*)&ch, 1);
 #endif
+    return 0;
 }
 
 int stdio_getc(void)
 {
     int ch = 0;
 #if CONFIG_PIE_USING_STDIO == 1
-    return device_read(STDIO(), (uint8_t*)&ch, 1);
-#else
-    return 0;
+    if (STDIO()->ops)
+        return device_read(STDIO(), (uint8_t*)&ch, 1);
 #endif
+    return 0;
 }
 
 int pie_print(const char* fmt, ...)
@@ -72,10 +79,10 @@ int pie_print(const char* fmt, ...)
     ret = vsnprintf((char*)stdio_buffer, sizeof(stdio_buffer) - 1, fmt, args);
     va_end(args);
 
-    return device_write(STDIO(), (const uint8_t*)stdio_buffer, ret);
-#else
-    return 0;
+    if (STDIO()->ops)
+        device_write(STDIO(), (const uint8_t*)stdio_buffer, ret);
 #endif
+    return 0;
 }
 
 
